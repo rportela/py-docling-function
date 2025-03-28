@@ -57,4 +57,4 @@ async def parse_document(request: Request, x_api_key: str = Header(...)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080, timeout_keep_alive=360)
+    uvicorn.run(app, host="0.0.0.0", port=8080, timeout_keep_alive=420)

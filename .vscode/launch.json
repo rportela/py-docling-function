@@ -15,7 +15,7 @@
                 "--port",
                 "8080",
                 "--timeout-keep-alive",
-                "360"
+                "420"
             ],
             "jinja": true
         }

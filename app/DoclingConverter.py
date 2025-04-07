@@ -2,7 +2,6 @@
 from datetime import datetime, timezone
 from email import message_from_bytes, policy
 from email.message import EmailMessage
-import hashlib
 from io import BytesIO
 import os
 from typing import List, Optional
@@ -107,7 +106,7 @@ class DoclingConverter:
         Convert the content bytes to document conversion result.
         """
         started_at = datetime.now(tz=timezone.utc)
-        content_hash = hashlib.sha256(content_bytes).hexdigest()
+        content_hash = blake3(content_bytes).hexdigest()
         stream = DocumentStream(
             name=filename or content_type, stream=BytesIO(content_bytes)
         )
@@ -182,7 +181,11 @@ class DoclingConverter:
         return None
 
     def convert(
-        self, content_type: str, content: bytes, filename: Optional[str]
+        self,
+        content_type: str,
+        content: bytes,
+        filename: Optional[str],
+        overwrite: bool = False,
     ) -> DoclingConversionResult:
         """
         Convert binary content to a DoclingDocument.
@@ -192,7 +195,7 @@ class DoclingConverter:
 
         # checks the cache
         cached = self.get_cached(content_hash)
-        if cached is not None:
+        if cached is not None and not overwrite:
             return cached
 
         # checks the content type

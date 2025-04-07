@@ -3,3 +3,4 @@ uvicorn
 docling
 python-multipart
 transformers
+accelerate

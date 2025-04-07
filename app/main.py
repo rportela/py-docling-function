@@ -5,32 +5,12 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from .docling_conversion import DoclingConversionResult, DoclingConverter
+from app.DoclingConverter import DoclingConverter
 
 app = FastAPI()
 app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
 
 API_KEY = os.getenv("DOC_API_KEY", "my-secret-key")
-
-
-def make_res(result: DoclingConversionResult):
-    """
-    Create a response model from the conversion result.
-    """
-
-    return {
-        "started_at": result.started_at,
-        "seconds_taken": result.seconds_taken,
-        "content_type": result.content_type,
-        "content_hash": result.content_hash,
-        "chunks": result.chunks,
-        "filename": result.filename,
-        "attachments": (
-            [make_res(attachment) for attachment in result.attachments]
-            if result.attachments
-            else None
-        ),
-    }
 
 
 @app.post("/parse")
@@ -50,7 +30,7 @@ async def parse_document(request: Request, x_api_key: str = Header(...)):
             )
         filename = request.headers.get("filename", "uploaded")
         result = DoclingConverter().convert(content_type, contents, filename)
-        result_doc = make_res(result)
+        result_doc = result.model_dump()
         return JSONResponse(content=result_doc)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

@@ -4,3 +4,5 @@ docling
 python-multipart
 transformers
 accelerate
+blake3
+azure-storage-blob

@@ -29,7 +29,8 @@ async def parse_document(request: Request, x_api_key: str = Header(...)):
                 detail="No content type provided. Please add the Content-Type header",
             )
         filename = request.headers.get("filename", "uploaded")
-        result = DoclingConverter().convert(content_type, contents, filename)
+        overwrite = request.headers.get("overwrite", "false").lower() == "true"
+        result = DoclingConverter().convert(content_type, contents, filename, overwrite)
         result_doc = result.model_dump()
         return JSONResponse(content=result_doc)
     except Exception as e:

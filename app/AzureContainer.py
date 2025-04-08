@@ -51,6 +51,13 @@ class AzureBlobContainer:
         blob_client = self.container_client.get_blob_client(blob_name)
         blob_client.delete_blob()
 
+    def get_blob_date(self, blob_name: str) -> datetime | None:
+        blob_client = self.container_client.get_blob_client(blob_name)
+        if not blob_client.exists():
+            return None
+        blob_properties = blob_client.get_blob_properties()
+        return blob_properties.creation_time
+
 
 def get_content_by_hash_container() -> AzureBlobContainer:
     return AzureBlobContainer("content-by-hash")

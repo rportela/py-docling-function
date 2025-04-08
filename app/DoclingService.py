@@ -29,7 +29,8 @@ class DoclingService:
         Process text content and convert it to a DoclingDocument.
         """
         doc = DoclingDocument(name=filename)
-        doc.add_text(label=DocItemLabel("text"), text=content_bytes.decode(encoding))
+        content_text = content_bytes.decode(encoding, errors="replace")
+        doc.add_text(label=DocItemLabel("text"), text=content_text)
         return doc
 
     def _process_generic_content(

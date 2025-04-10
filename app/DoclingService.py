@@ -65,7 +65,7 @@ class DoclingService:
             part_bytes: bytes = part.get_payload(decode=True)  # type: ignore
             content_type = part.get_content_type()
             encoding = part.get_content_charset() or "utf-8"
-            if not is_supported_mime_type(content_type):
+            if not is_supported_mime_type(content_type) or not part_bytes:
                 continue
             part_filename = part.get_filename()
             if not part_filename:
@@ -132,7 +132,15 @@ class DoclingService:
                 else:
                     return self.get_docling(model, original_bytes, True, attempt + 1)
             else:
-                docling = DoclingDocument.model_validate_json(
-                    docling_bytes.decode("utf-8")
-                )
+                try:
+                    docling = DoclingDocument.model_validate_json(
+                        docling_bytes.decode("utf-8")
+                    )
+                except Exception as e:
+                    if attempt > 0:
+                        raise e
+                    else:
+                        return self.get_docling(
+                            model, original_bytes, True, attempt + 1
+                        )
         return docling
